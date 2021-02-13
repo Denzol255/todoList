@@ -18,13 +18,12 @@ if (storageAvailable("localStorage")) {
     todoList = document.querySelector(".todo-list"),
     todoCompleted = document.querySelector(".todo-completed");
 
-  const todoData = [];
-
-  const render = function () {
+  let todoData = [];
+  const render = function (data) {
     todoList.textContent = "";
     todoCompleted.textContent = "";
 
-    todoData.forEach(function (item) {
+    data.forEach(function (item) {
       const li = document.createElement("li");
       li.classList.add("todo-item");
 
@@ -46,22 +45,30 @@ if (storageAvailable("localStorage")) {
       const btntodoComplete = li.querySelector(".todo-complete");
       btntodoComplete.addEventListener("click", function () {
         item.completed = !item.completed;
-        render();
+        render(data);
       });
 
       const btntodoRemove = li.querySelector(".todo-remove");
       btntodoRemove.addEventListener("click", function () {
-        let indexOfObj = todoData.findIndex((i) => i.value === li.textContent);
-        todoData.splice(indexOfObj, 1);
+        let indexOfObj = data.findIndex((i) => i.value === li.textContent);
+        data.splice(indexOfObj, 1);
         const todoButtons = this.parentNode,
           parentLi = todoButtons.parentNode;
         parentLi.remove();
-        localStorage.removeItem("todos", JSON.stringify(todoData[indexOfObj]));
-        render();
+        localStorage.removeItem("todos", JSON.stringify(data[indexOfObj]));
+        render(data);
       });
-      localStorage.setItem("todos", JSON.stringify(todoData));
+      localStorage.setItem("todos", JSON.stringify(data));
     });
   };
+
+  const oldData = localStorage.getItem("todos");
+  if (oldData) {
+    todoData = JSON.parse(oldData);
+    render(todoData);
+  } else {
+    render(todoData);
+  }
 
   todoControl.addEventListener("submit", function (e) {
     e.preventDefault();
@@ -74,12 +81,9 @@ if (storageAvailable("localStorage")) {
     if (headerInput.value !== "") {
       todoData.push(newToDo);
       headerInput.value = "";
+      render(todoData);
     }
-
-    render();
   });
-
-  render();
 } else {
   alert("This browser does not have localStorage");
 }
