@@ -1,18 +1,4 @@
 "use strict";
-
-function storageAvailable(type) {
-  try {
-    let storage = window[type],
-      x = "__storage_test__";
-    storage.setItem(x, x);
-    storage.removeItem(x);
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
-if (storageAvailable("localStorage")) {
   const todoControl = document.querySelector(".todo-control"),
     headerInput = document.querySelector(".header-input"),
     todoList = document.querySelector(".todo-list"),
@@ -63,13 +49,10 @@ if (storageAvailable("localStorage")) {
   };
 
   const oldData = localStorage.getItem("todos");
-  if (oldData) {
+ 
     todoData = JSON.parse(oldData);
     render(todoData);
-  } else {
-    render(todoData);
-  }
-
+    
   todoControl.addEventListener("submit", function (e) {
     e.preventDefault();
 
@@ -84,6 +67,3 @@ if (storageAvailable("localStorage")) {
       render(todoData);
     }
   });
-} else {
-  alert("This browser does not have localStorage");
-}
